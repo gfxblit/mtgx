@@ -1,8 +1,11 @@
 import * as React from 'react'
 import Card from './Card'
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
+import { DataGrid, GridColDef, GridRenderCellParams, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarExport, GridToolbarFilterButton } from '@mui/x-data-grid'
 import CardPreview from './CardPreview'
-import { Link } from '@mui/material'
+import { Link, Button } from '@mui/material'
+import MuiCard from '@mui/material/Card'
+import UploadIcon from '@mui/icons-material/Upload'
+
 import './Mana.css'
 
 const columns: GridColDef[] = [
@@ -43,6 +46,20 @@ const columns: GridColDef[] = [
   }
 ]
 
+function CustomToolbar () {
+  return (
+    <GridToolbarContainer>
+      <Button startIcon={<UploadIcon />}>
+        Import
+      </Button>
+      <GridToolbarColumnsButton />
+      <GridToolbarFilterButton />
+      <GridToolbarDensitySelector />
+      <GridToolbarExport />
+    </GridToolbarContainer>
+  )
+}
+
 interface Props {
   cards: any
 }
@@ -63,8 +80,11 @@ export default function CardTable (props: Props): React.ReactElement {
   }
 
   return (
-    <div style={{ height: 400, width: '90%' }}>
+    <MuiCard style={{ height: 400, width: '90%' }}>
       <DataGrid
+        components={{
+          Toolbar: CustomToolbar
+        }}
         rows={props.cards}
         columns={columns}
         pageSize={5}
@@ -82,6 +102,6 @@ export default function CardTable (props: Props): React.ReactElement {
       <CardPreview
         card={previewCard}
       />
-    </div>
+    </MuiCard>
   )
 }
