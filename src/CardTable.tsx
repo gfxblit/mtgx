@@ -1,12 +1,40 @@
 import * as React from 'react'
 import Card from './Card'
-import { DataGrid, GridColDef } from '@mui/x-data-grid'
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import CardPreview from './CardPreview'
+import { Link } from '@mui/material'
+import './Mana.css'
 
 const columns: GridColDef[] = [
   { field: 'set', headerName: 'SET', width: 50 },
-  { field: 'name', headerName: 'NAME', width: 250 },
-  { field: 'manaCost', headerName: 'COST', width: 100 },
+  {
+    field: 'name',
+    headerName: 'NAME',
+    width: 250,
+    renderCell: (params: GridRenderCellParams<Card>) => (
+        <Link href={params.row.detailsUrl}>
+         {params.row.name}
+        </Link>
+    )
+  },
+  {
+    field: 'manaCost',
+    headerName: 'COST',
+    width: 100,
+    renderCell: (params: GridRenderCellParams<Card>) => {
+      // example: manaCost string: "{U}{U}{3}" translates to
+      // <abbr className="card-symbol card-symbol-U" />
+      // <abbr className="card-symbol card-symbol-U" />
+      // <abbr className="card-symbol card-symbol-3" />
+      const matchInsideBraces = /\{([^})]+)\}/
+
+      return (params.row.manaCost.split(matchInsideBraces)
+        .filter((e: any) => e) // filter empty strings
+        .map((ent: string, index: number) =>
+          <abbr key={index} className={`card-symbol card-symbol-${ent}`} />
+        ))
+    }
+  },
   { field: 'type', headerName: 'TYPE', width: 200 },
   {
     field: 'price',

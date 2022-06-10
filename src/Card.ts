@@ -6,6 +6,7 @@ class Card {
   readonly imageUrls: { png: string }
   readonly type: string
   readonly price: string
+  readonly detailsUrl: string
 
   constructor (
     id: string,
@@ -14,7 +15,8 @@ class Card {
     manaCost: string,
     imageUrls: { png: string },
     type: string,
-    price: string) {
+    price: string,
+    detailsUrl: string) {
     this.id = id
     this.name = name
     this.set = set
@@ -22,6 +24,7 @@ class Card {
     this.imageUrls = imageUrls
     this.type = type
     this.price = price
+    this.detailsUrl = detailsUrl
   }
 
   static fromJson (json: any): Card {
@@ -32,7 +35,8 @@ class Card {
       json.mana_cost,
       json.image_uris,
       json.type_line,
-      json.price)
+      json.price,
+      json.scryfall_uri)
     return card
   }
 }
