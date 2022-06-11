@@ -11,7 +11,8 @@ import './Mana.css'
 import { getCard } from './Scryfall'
 
 const columns: GridColDef[] = [
-  { field: 'set', headerName: 'SET', width: 50 },
+  { field: 'set', headerName: 'SET', width: 75 },
+  { field: 'quantity', headerName: 'QTY', width: 75 },
   {
     field: 'name',
     headerName: 'NAME',
@@ -50,7 +51,7 @@ const columns: GridColDef[] = [
 
 export default function CardTable (props: { cards: any }): React.ReactElement {
   const [previewCard, setPreviewCard] = React.useState<Card>()
-  const [collection, setCollection] = React.useState<Card[]>([])
+  const [collection, setCollection] = React.useState<Card[]>(props.cards)
 
   const handleFileChange = (e: any) => {
     if (e.target.files.length <= 0) {
@@ -68,6 +69,9 @@ export default function CardTable (props: { cards: any }): React.ReactElement {
             return getCard({
               set: csvRow['Set Code'].toLowerCase(),
               number: csvRow['Card Number']
+            }).then((card: Card) => {
+              card.quantity = csvRow.Quantity
+              return card
             })
           })
         ).then((fetchedCards: Card[]) => {
@@ -118,7 +122,7 @@ export default function CardTable (props: { cards: any }): React.ReactElement {
   }
 
   return (
-    <MuiCard style={{ height: 600, width: '90%' }}>
+    <MuiCard style={{ height: 650, width: '90%' }}>
       <DataGrid
         components={{
           Toolbar: CustomToolbar
