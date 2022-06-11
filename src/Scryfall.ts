@@ -1,33 +1,31 @@
 import Card from './Card'
+import throttledQueue from 'throttled-queue'
 
+// Scryfall recommends rate limits at 10 transactions/sec:
+// https://scryfall.com/docs/api
+const SCRYFALL_REQUESTS_CAP = 10
+const SCYFALL_REQUEST_INTERVAL = 1000
 const SCRYFALL_BASE_API_URL = 'https://api.scryfall.com'
 const SCRYFALL_CARDS_API_URL = SCRYFALL_BASE_API_URL + '/cards'
-const SCRYFALL_CARDS_NAMED_API_URL = SCRYFALL_CARDS_API_URL + '/named?'
+// const SCRYFALL_CARDS_NAMED_API_URL = SCRYFALL_CARDS_API_URL + '/named?'
 
-const cardsByName: Map<string, Card> = new Map()
+const cardsBySetNumber: Map<{ set: string, number: number }, Card> = new Map()
+const throttle = throttledQueue(SCRYFALL_REQUESTS_CAP, SCYFALL_REQUEST_INTERVAL)
 
-function toUrlString (str: string): string {
-  return str.replace(/ /gi, '+')
-}
-
-function getCardByName (name: string): Promise<Card> {
-  const card = cardsByName.get(name)
-
+async function getCard (setNumber: {set: string, number: number}) {
+  const card = cardsBySetNumber.get(setNumber)
   if (card) {
-    return new Promise<Card>((resolve, reject) => {
-      resolve(card)
-    })
+    return new Promise<Card>(resolve => resolve(card))
   }
 
-  const newCardName = toUrlString(name)
-
-  return fetch(SCRYFALL_CARDS_NAMED_API_URL + 'fuzzy=' + newCardName)
-    .then((res) => res.json())
-    .then((json) => {
+  return throttle<Card>(() => fetch(
+    `${SCRYFALL_CARDS_API_URL}/${setNumber.set}/${setNumber.number}`)
+    .then(res => res.json())
+    .then(json => {
       const card = Card.fromJson(json)
-      cardsByName.set(name, card)
+      cardsBySetNumber.set(setNumber, card)
       return card
-    })
+    }))
 }
 
-export { getCardByName }
+export { getCard }

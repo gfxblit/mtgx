@@ -5,8 +5,10 @@ import CardPreview from './CardPreview'
 import { Link, Button } from '@mui/material'
 import MuiCard from '@mui/material/Card'
 import UploadIcon from '@mui/icons-material/Upload'
+import Papa from 'papaparse'
 
 import './Mana.css'
+import { getCard } from './Scryfall'
 
 const columns: GridColDef[] = [
   { field: 'set', headerName: 'SET', width: 50 },
@@ -46,32 +48,68 @@ const columns: GridColDef[] = [
   }
 ]
 
-function CustomToolbar () {
-  return (
+export default function CardTable (props: { cards: any }): React.ReactElement {
+  const [previewCard, setPreviewCard] = React.useState<Card>()
+  const [collection, setCollection] = React.useState<Card[]>([])
+
+  const handleFileChange = (e: any) => {
+    if (e.target.files.length <= 0) {
+      return
+    }
+
+    Papa.parse(e.target.files[0], {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        console.log(results)
+        Promise.all(
+          results.data.map((csvRow: any) => {
+            console.log('csvRow', csvRow)
+            return getCard({
+              set: csvRow['Set Code'].toLowerCase(),
+              number: csvRow['Card Number']
+            })
+          })
+        ).then((fetchedCards: Card[]) => {
+          const filteredCollection = fetchedCards.filter((card: Card) => card.id)
+          console.log('filteredCollection', filteredCollection)
+          setCollection(filteredCollection)
+        })
+      }
+    })
+  }
+
+  const CustomToolbar = () => (
     <GridToolbarContainer>
-      <Button startIcon={<UploadIcon />}>
+    <input
+      accept="csv/*"
+      style={{ display: 'none' }}
+      id="raised-button-file"
+      type="file"
+      onChange={handleFileChange}
+    />
+    <label htmlFor="raised-button-file">
+      <Button component="span" startIcon={<UploadIcon />}>
         Import
       </Button>
+    </label>
+
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
       <GridToolbarDensitySelector />
       <GridToolbarExport />
     </GridToolbarContainer>
   )
-}
 
-interface Props {
-  cards: any
-}
-
-export default function CardTable (props: Props): React.ReactElement {
-  const [previewCard, setPreviewCard] = React.useState<Card>()
+  React.useEffect(() => {
+    // setCollection(props.cards)
+  })
 
   const handleRowOver = (e: any) => {
     const rowId = e.currentTarget.dataset.id
-    const card: Card = props.cards.find((card: Card) => card.id === rowId)
-    console.log(rowId, card)
-    console.log(e.currentTarget.dataset)
+    const card: Card | undefined = collection.find((card: Card) => card.id === rowId)
+    // console.log('rowId, card:', rowId, card)
+    // console.log(e.currentTarget.dataset)
     setPreviewCard(card)
   }
 
@@ -80,15 +118,15 @@ export default function CardTable (props: Props): React.ReactElement {
   }
 
   return (
-    <MuiCard style={{ height: 400, width: '90%' }}>
+    <MuiCard style={{ height: 600, width: '90%' }}>
       <DataGrid
         components={{
           Toolbar: CustomToolbar
         }}
-        rows={props.cards}
+        rows={collection}
         columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        pageSize={10}
+        rowsPerPageOptions={[10]}
         checkboxSelection
         disableSelectionOnClick
         componentsProps={{
@@ -99,9 +137,7 @@ export default function CardTable (props: Props): React.ReactElement {
         }}
       />
 
-      <CardPreview
-        card={previewCard}
-      />
+      <CardPreview card={previewCard} />
     </MuiCard>
   )
 }

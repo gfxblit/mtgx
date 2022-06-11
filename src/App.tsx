@@ -2,7 +2,7 @@ import * as React from 'react'
 import './App.css'
 import Card from './Card'
 import CardTable from './CardTable'
-import { getCardByName } from './Scryfall'
+import { getCard } from './Scryfall'
 
 function App () {
   // const cards = [
@@ -18,9 +18,9 @@ function App () {
     setCardsLoading(true)
 
     Promise.all([
-      getCardByName('Abherrant Mind Sorcerer'),
-      getCardByName('Adventurous Impulse'),
-      getCardByName('Xanathar, Guild Kingpin')
+      getCard({ set: 'xln', number: 96 }),
+      getCard({ set: 'afr', number: 131 }),
+      getCard({ set: 'afr', number: 89 })
     ]).then(setCards)
   }
 
