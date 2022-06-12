@@ -49,7 +49,8 @@ const columns: GridColDef[] = [
   }
 ]
 
-export default function CardTable (props: { cards: any }): React.ReactElement {
+export default function CardTable (
+  props: { cards: any, onCardSelected: (card: Card) => void }): React.ReactElement {
   const [previewCard, setPreviewCard] = React.useState<Card>()
   const [collection, setCollection] = React.useState<Card[]>(props.cards)
 
@@ -109,16 +110,26 @@ export default function CardTable (props: { cards: any }): React.ReactElement {
     // setCollection(props.cards)
   })
 
-  const handleRowOver = (e: any) => {
-    const rowId = e.currentTarget.dataset.id
-    const card: Card | undefined = collection.find((card: Card) => card.id === rowId)
+  const findCard = (rowId: any): Card | undefined => {
     // console.log('rowId, card:', rowId, card)
     // console.log(e.currentTarget.dataset)
+    return collection.find((card: Card) => card.id === rowId)
+  }
+
+  const handleRowOver = (e: any) => {
+    const card = findCard(e.currentTarget.dataset.id)
     setPreviewCard(card)
   }
 
   const handleMouseLeave = (event: any) => {
     setPreviewCard(undefined)
+  }
+
+  const handleMouseDown = (e: any) => {
+    const card = findCard(e.currentTarget.dataset.id)
+    if (card) {
+      props.onCardSelected(card)
+    }
   }
 
   return (
@@ -136,7 +147,8 @@ export default function CardTable (props: { cards: any }): React.ReactElement {
         componentsProps={{
           row: {
             onMouseEnter: handleRowOver,
-            onMouseLeave: handleMouseLeave
+            onMouseLeave: handleMouseLeave,
+            onMouseDown: handleMouseDown
           }
         }}
       />

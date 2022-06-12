@@ -16,6 +16,10 @@ function App () {
   const [cards, setCards] = React.useState<Card[]>([])
   const [cardsLoading, setCardsLoading] = React.useState(false)
 
+  const handleCardSelected = (card: Card) => {
+    console.log('collection: card selected')
+  }
+
   if (!cardsLoading) {
     setCardsLoading(true)
 
@@ -33,8 +37,11 @@ function App () {
           href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
         />
         <Stack direction="row" spacing={1} style={{ width: '90%' }}>
-          <CardTable cards={cards}/>
-          <Deck />
+          <CardTable
+            cards={cards}
+            onCardSelected={handleCardSelected}
+          />
+          <Deck cards={[]} />
         </Stack>
       </header>
     </div>
