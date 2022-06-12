@@ -3,6 +3,8 @@ import './App.css'
 import Card from './Card'
 import CardTable from './CardTable'
 import { getCard } from './Scryfall'
+import Deck from './Deck'
+import Stack from '@mui/material/Stack'
 
 function App () {
   // const cards = [
@@ -30,7 +32,10 @@ function App () {
         <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
         />
-        <CardTable cards={cards}/>
+        <Stack direction="row" spacing={1} style={{ width: '90%' }}>
+          <CardTable cards={cards}/>
+          <Deck />
+        </Stack>
       </header>
     </div>
   )

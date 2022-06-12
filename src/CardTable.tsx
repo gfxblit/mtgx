@@ -122,7 +122,7 @@ export default function CardTable (props: { cards: any }): React.ReactElement {
   }
 
   return (
-    <MuiCard style={{ height: 650, width: '90%' }}>
+    <MuiCard style={{ height: 650, width: '100%' }}>
       <DataGrid
         components={{
           Toolbar: CustomToolbar
