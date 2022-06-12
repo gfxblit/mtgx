@@ -9,6 +9,7 @@ class Card {
   readonly detailsUrl: string
   readonly number: number
   quantity: number
+  quantityInDeck: number
 
   constructor (
     id: string,
@@ -20,7 +21,8 @@ class Card {
     price: string,
     detailsUrl: string,
     number: number,
-    quantity: number = 1) {
+    quantity: number = 1,
+    quantityInDeck: number = 0) {
     this.id = id
     this.name = name
     this.set = set
@@ -31,6 +33,7 @@ class Card {
     this.detailsUrl = detailsUrl
     this.number = number
     this.quantity = quantity
+    this.quantityInDeck = quantityInDeck
   }
 
   static fromJson (json: any): Card {

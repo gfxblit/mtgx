@@ -14,14 +14,28 @@ function App () {
   // ]
 
   const [cards, setCards] = React.useState<Card[]>([])
-  const [deck, setDeck] = React.useState<Map<{ set: string, number: number }, Card>>(
+  const [deck, setDeck] = React.useState<Map<string, Card>>(
     new Map())
   const [cardsLoading, setCardsLoading] = React.useState(false)
 
-  const handleCardSelected = (card: Card) => {
+  const handleCardSelectedInCollection = (card: Card) => {
+    if (card.quantity > 0) {
+      card.quantity--
+      card.quantityInDeck++
+    }
     const newDeck = new Map(deck)
-    newDeck.set({ set: card.set, number: card.number }, card)
+    newDeck.set(card.id, card)
     setDeck(newDeck)
+  }
+
+  const handleCardSelectedInDeck = (card: Card) => {
+    card.quantity++
+    card.quantityInDeck--
+    if (card.quantityInDeck === 0) {
+      const newDeck = new Map(deck)
+      newDeck.delete(card.id)
+      setDeck(newDeck)
+    }
   }
 
   if (!cardsLoading) {
@@ -43,9 +57,12 @@ function App () {
         <Stack direction="row" spacing={1} style={{ width: '90%' }}>
           <CardTable
             cards={cards}
-            onCardSelected={handleCardSelected}
+            onCardSelected={handleCardSelectedInCollection}
           />
-          <Deck cards={deck} />
+          <Deck
+            cards={deck}
+            onCardSelected={handleCardSelectedInDeck}
+          />
         </Stack>
       </header>
     </div>
