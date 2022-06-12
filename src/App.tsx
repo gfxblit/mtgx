@@ -14,10 +14,14 @@ function App () {
   // ]
 
   const [cards, setCards] = React.useState<Card[]>([])
+  const [deck, setDeck] = React.useState<Map<{ set: string, number: number }, Card>>(
+    new Map())
   const [cardsLoading, setCardsLoading] = React.useState(false)
 
   const handleCardSelected = (card: Card) => {
-    console.log('collection: card selected')
+    const newDeck = new Map(deck)
+    newDeck.set({ set: card.set, number: card.number }, card)
+    setDeck(newDeck)
   }
 
   if (!cardsLoading) {
@@ -41,7 +45,7 @@ function App () {
             cards={cards}
             onCardSelected={handleCardSelected}
           />
-          <Deck cards={[]} />
+          <Deck cards={deck} />
         </Stack>
       </header>
     </div>

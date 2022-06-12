@@ -7,6 +7,7 @@ class Card {
   readonly type: string
   readonly price: string
   readonly detailsUrl: string
+  readonly number: number
   quantity: number
 
   constructor (
@@ -18,6 +19,7 @@ class Card {
     type: string,
     price: string,
     detailsUrl: string,
+    number: number,
     quantity: number = 1) {
     this.id = id
     this.name = name
@@ -27,6 +29,7 @@ class Card {
     this.type = type
     this.price = price
     this.detailsUrl = detailsUrl
+    this.number = number
     this.quantity = quantity
   }
 
@@ -39,7 +42,8 @@ class Card {
       json.image_uris,
       json.type_line,
       json.price,
-      json.scryfall_uri)
+      json.scryfall_uri,
+      json.collector_number)
     return card
   }
 }
