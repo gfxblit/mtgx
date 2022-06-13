@@ -5,6 +5,7 @@ import CardTable from './CardTable'
 import { getCard } from './Scryfall'
 import Deck from './Deck'
 import Stack from '@mui/material/Stack'
+import CardPreview from './CardPreview'
 
 function App () {
   // const cards = [
@@ -17,6 +18,7 @@ function App () {
   const [deck, setDeck] = React.useState<Map<string, Card>>(
     new Map())
   const [cardsLoading, setCardsLoading] = React.useState(false)
+  const [previewCard, setPreviewCard] = React.useState<Card>()
 
   const handleCardSelectedInCollection = (card: Card) => {
     if (card.quantity > 0) {
@@ -28,6 +30,10 @@ function App () {
     setDeck(newDeck)
   }
 
+  const handleRowOverInCollection = (card: Card) => {
+    setPreviewCard(card)
+  }
+
   const handleCardSelectedInDeck = (card: Card) => {
     card.quantity++
     card.quantityInDeck--
@@ -36,6 +42,10 @@ function App () {
       newDeck.delete(card.id)
       setDeck(newDeck)
     }
+  }
+
+  const handleRowOverInDeck = (card: Card) => {
+    setPreviewCard(card)
   }
 
   if (!cardsLoading) {
@@ -58,12 +68,15 @@ function App () {
           <CardTable
             cards={cards}
             onCardSelected={handleCardSelectedInCollection}
+            onRowOver={handleRowOverInCollection}
           />
           <Deck
             cards={deck}
             onCardSelected={handleCardSelectedInDeck}
+            onRowOver={handleRowOverInDeck}
           />
         </Stack>
+        <CardPreview card={previewCard} />
       </header>
     </div>
   )

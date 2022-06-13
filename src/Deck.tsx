@@ -3,11 +3,23 @@ import MuiCard from '@mui/material/Card'
 import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid'
 import Card from './Card'
 
-export default function Deck (props: { cards: Map<string, Card>, onCardSelected: (card: Card) => void }): React.ReactElement {
+export default function Deck (
+  props: {
+    cards: Map<string, Card>,
+    onCardSelected: (card: Card) => void,
+    onRowOver?: (card: Card) => void
+  }): React.ReactElement {
   const handleMouseDown = (e: any) => {
     const card = props.cards.get(e.currentTarget.dataset.id)
     if (card) {
       props.onCardSelected(card)
+    }
+  }
+
+  const handleMouseEnter = (e: any) => {
+    const card = props.cards.get(e.currentTarget.dataset.id)
+    if (props.onRowOver && card) {
+      props.onRowOver(card)
     }
   }
   return (
@@ -25,7 +37,8 @@ export default function Deck (props: { cards: Map<string, Card>, onCardSelected:
         rows={Array.from(props.cards.values())}
         componentsProps={{
           row: {
-            onMouseDown: handleMouseDown
+            onMouseDown: handleMouseDown,
+            onMouseEnter: handleMouseEnter
           }
         }}
       />

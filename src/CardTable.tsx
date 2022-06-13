@@ -1,7 +1,6 @@
 import * as React from 'react'
 import Card from './Card'
 import { DataGrid, GridColDef, GridRenderCellParams, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarExport, GridToolbarFilterButton } from '@mui/x-data-grid'
-import CardPreview from './CardPreview'
 import { Link, Button } from '@mui/material'
 import MuiCard from '@mui/material/Card'
 import UploadIcon from '@mui/icons-material/Upload'
@@ -50,8 +49,11 @@ const columns: GridColDef[] = [
 ]
 
 export default function CardTable (
-  props: { cards: any, onCardSelected: (card: Card) => void }): React.ReactElement {
-  const [previewCard, setPreviewCard] = React.useState<Card>()
+  props: {
+    cards: any,
+    onCardSelected: (card: Card) => void,
+    onRowOver?: (card: Card) => void
+  }): React.ReactElement {
   const [collection, setCollection] = React.useState<Card[]>(props.cards)
 
   const handleFileChange = (e: any) => {
@@ -118,11 +120,12 @@ export default function CardTable (
 
   const handleRowOver = (e: any) => {
     const card = findCard(e.currentTarget.dataset.id)
-    setPreviewCard(card)
+    if (props.onRowOver && card) {
+      props.onRowOver(card)
+    }
   }
 
   const handleMouseLeave = (event: any) => {
-    setPreviewCard(undefined)
   }
 
   const handleMouseDown = (e: any) => {
@@ -152,8 +155,6 @@ export default function CardTable (
           }
         }}
       />
-
-      <CardPreview card={previewCard} />
     </MuiCard>
   )
 }
