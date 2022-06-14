@@ -54,7 +54,7 @@ export default function CardTable (
     onCardSelected: (card: Card) => void,
     onRowOver?: (card: Card) => void
   }): React.ReactElement {
-  const [collection, setCollection] = React.useState<Card[]>(props.cards)
+  const [collection, setCollection] = React.useState<Map<string, Card>>(props.cards)
 
   const handleFileChange = (e: any) => {
     if (e.target.files.length <= 0) {
@@ -78,7 +78,10 @@ export default function CardTable (
             })
           })
         ).then((fetchedCards: Card[]) => {
-          const filteredCollection = fetchedCards.filter((card: Card) => card.id)
+          const filteredCollection: Map<string, Card> = new Map(
+            fetchedCards.filter((card: Card) => card.id).map(
+              card => [card.id, card]
+            ))
           console.log('filteredCollection', filteredCollection)
           setCollection(filteredCollection)
         })
@@ -115,7 +118,7 @@ export default function CardTable (
   const findCard = (rowId: any): Card | undefined => {
     // console.log('rowId, card:', rowId, card)
     // console.log(e.currentTarget.dataset)
-    return collection.find((card: Card) => card.id === rowId)
+    return collection.get(rowId)
   }
 
   const handleRowOver = (e: any) => {
