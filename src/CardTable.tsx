@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Card from './Card'
 import { DataGrid, GridColDef, GridRenderCellParams, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarExport, GridToolbarFilterButton } from '@mui/x-data-grid'
-import { Link, Button } from '@mui/material'
+import { Link, Button, Stack, Checkbox } from '@mui/material'
 import MuiCard from '@mui/material/Card'
 import UploadIcon from '@mui/icons-material/Upload'
 import Papa from 'papaparse'
@@ -55,6 +55,38 @@ export default function CardTable (
     onRowOver?: (card: Card) => void
   }): React.ReactElement {
   const [collection, setCollection] = React.useState<Map<string, Card>>(props.cards)
+  const [importedCollection, setImportedCollection] =
+    React.useState<Map<string, Card>>(new Map())
+
+  type Filter = (card: Card) => boolean
+  const [filters, setFilters] = React.useState<Map<string, Filter>>(new Map())
+
+  const filterCollection = (
+    collection: Map<string, Card>,
+    filters: Map<string, Filter>): Map<string, Card> => {
+    const filteredCollection = new Map(collection)
+
+    if (filters.size === 0) {
+      return filteredCollection
+    }
+
+    console.log('filters', filters)
+
+    filteredCollection.forEach((card: Card) => {
+      let allow = false
+      filters.forEach((filter: Filter, filterId: string) => {
+        if (filter(card)) {
+          allow = true
+          console.log(card.id, filterId)
+        }
+      })
+      if (!allow) {
+        filteredCollection.delete(card.id)
+      }
+    })
+    console.log('filteredCollection', filteredCollection)
+    return filteredCollection
+  }
 
   const handleFileChange = (e: any) => {
     if (e.target.files.length <= 0) {
@@ -83,7 +115,8 @@ export default function CardTable (
               card => [card.id, card]
             ))
           console.log('filteredCollection', filteredCollection)
-          setCollection(filteredCollection)
+          setImportedCollection(filteredCollection)
+          setCollection(filterCollection(filteredCollection, filters))
         })
       }
     })
@@ -138,26 +171,60 @@ export default function CardTable (
     }
   }
 
+  const handleColorCheckboxChange = (event: any, checked: boolean) => {
+    const newFilters: Map<string, Filter> = new Map(filters)
+    const color = event.target.id
+    const filterKey = `filter-for-${color}`
+
+    if (checked) {
+      newFilters.set(
+        filterKey,
+        (card: Card) => card.manaCost.search(`{${color}}`) >= 0)
+    } else {
+      newFilters.delete(filterKey)
+    }
+    setFilters(newFilters)
+    setCollection(filterCollection(importedCollection, newFilters))
+  }
+
   return (
-    <MuiCard style={{ height: 650, width: '100%' }}>
-      <DataGrid
-        components={{
-          Toolbar: CustomToolbar
-        }}
-        rows={collection}
-        columns={columns}
-        pageSize={10}
-        rowsPerPageOptions={[10]}
-        checkboxSelection
-        disableSelectionOnClick
-        componentsProps={{
-          row: {
-            onMouseEnter: handleRowOver,
-            onMouseLeave: handleMouseLeave,
-            onMouseDown: handleMouseDown
-          }
-        }}
-      />
-    </MuiCard>
+    <Stack spacing={1} style={{ height: 650, width: '100%' }}>
+      <MuiCard style={{ height: 52 }}>
+        <Stack
+          direction="row"
+        >
+        {['B', 'G', 'R', 'U', 'W'].map((color: string) =>
+          <Checkbox key={color}
+            id={color}
+            icon={<abbr className={`card-symbol-big card-symbol-${color}`} />}
+            checkedIcon=
+              {<abbr className=
+                {`card-symbol-big-selected card-symbol-${color}`} />}
+            onChange={handleColorCheckboxChange}
+          />
+        )}
+        </Stack>
+      </MuiCard>
+      <MuiCard style={{ height: 650 }}>
+        <DataGrid
+          components={{
+            Toolbar: CustomToolbar
+          }}
+          rows={Array.from(collection.values())}
+          columns={columns}
+          pageSize={10}
+          rowsPerPageOptions={[10]}
+          checkboxSelection
+          disableSelectionOnClick
+          componentsProps={{
+            row: {
+              onMouseEnter: handleRowOver,
+              onMouseLeave: handleMouseLeave,
+              onMouseDown: handleMouseDown
+            }
+          }}
+        />
+      </MuiCard>
+    </Stack>
   )
 }

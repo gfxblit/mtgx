@@ -71,3 +71,38 @@
     background-position: top left;
     -print-color-adjust: exact;
 }
+
+.card-symbol-big {
+    display: inline-block;
+    margin: 1px 1px -1px 1px;
+    -webkit-border-radius: 500px;
+    border-radius: 500px;
+    -webkit-box-shadow: -1px 1px 0 rgba(0, 0, 0, 0.85);
+    box-shadow: -1px 1px 0 rgba(0, 0, 0, 0.85);
+    text-indent: -999em;
+    overflow: hidden;
+    width: 30px;
+    height: 30px;
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
+    background-position: top left;
+    -print-color-adjust: exact;
+}
+
+.card-symbol-big-selected {
+    display: inline-block;
+    margin: 1px 1px -1px 1px;
+    -webkit-border-radius: 500px;
+    border-radius: 500px;
+    -webkit-box-shadow: -1px 1px 0 rgba(0, 0, 0, 0.85);
+    box-shadow: -1px 1px 0 rgba(0, 0, 0, 0.85);
+    text-indent: -999em;
+    overflow: hidden;
+    width: 30px;
+    height: 30px;
+    -webkit-background-size: 100% 100%;
+    background-size: 100% 100%;
+    background-position: top left;
+    -print-color-adjust: exact;
+    outline-style: solid;
+}
