@@ -41,6 +41,10 @@ class CardIndex {
   getCards (token: string): Map<string, Card> | undefined {
     return this.index.get(token.toLowerCase())
   }
+
+  getIndex (): string[] {
+    return Array.from(this.index.keys())
+  }
 }
 
 export default CardIndex

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Card from './Card'
 import { DataGrid, GridColDef, GridRenderCellParams, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarExport, GridToolbarFilterButton } from '@mui/x-data-grid'
-import { Link, Button, Stack, Checkbox, TextField } from '@mui/material'
+import { Link, Button, Stack, Checkbox, TextField, Autocomplete } from '@mui/material'
 import MuiCard from '@mui/material/Card'
 import UploadIcon from '@mui/icons-material/Upload'
 import Papa from 'papaparse'
@@ -190,11 +190,18 @@ export default function CardTable (
     setCollection(filterCollection(importedCollection, newFilters))
   }
 
+  const handleSearchChange = (event: any, value: string) => {
+    const searchText = value
+    console.log(searchText)
+    console.log(cardIndex.getCards(searchText))
+  }
+
   return (
     <Stack spacing={1} style={{ height: 650, width: '100%' }}>
       <MuiCard style={{ height: 52 }}>
         <Stack
           direction="row"
+          alignItems={'center'}
         >
         {['B', 'G', 'R', 'U', 'W'].map((color: string) =>
           <Checkbox key={color}
@@ -206,6 +213,15 @@ export default function CardTable (
             onChange={handleColorCheckboxChange}
           />
         )}
+        <Autocomplete
+          freeSolo
+          size='small'
+          sx={{ width: 300 }}
+          id='autocomplete-card-filter'
+          options={cardIndex ? cardIndex.getIndex() : []}
+          renderInput={(params) => <TextField {...params} label='Search' />}
+          onInputChange={handleSearchChange}
+        />
         </Stack>
       </MuiCard>
       <MuiCard style={{ height: 650 }}>
