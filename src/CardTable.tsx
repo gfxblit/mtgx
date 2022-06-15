@@ -73,21 +73,17 @@ export default function CardTable (
       return filteredCollection
     }
 
-    console.log('filters', filters)
-
     filteredCollection.forEach((card: Card) => {
       let allow = false
       filters.forEach((filter: Filter, filterId: string) => {
         if (filter(card)) {
           allow = true
-          console.log(card.id, filterId)
         }
       })
       if (!allow) {
         filteredCollection.delete(card.id)
       }
     })
-    console.log('filteredCollection', filteredCollection)
     return filteredCollection
   }
 
