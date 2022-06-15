@@ -49,7 +49,8 @@ class Card {
       json.type_line,
       json.price,
       json.scryfall_uri,
-      json.collector_number)
+      json.collector_number,
+      json.oracle_text)
     return card
   }
 }
