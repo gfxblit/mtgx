@@ -15,11 +15,14 @@ export default function CardPreview (
 
   return (
       <div style={{
-        left: `${mousePosition.x + 10}px`,
-        top: `${mousePosition.y + 10}px`,
+        left: `${mousePosition.x + 20}px`,
+        top: `${mousePosition.y - 20}px`,
         position: 'fixed'
       }}>
-        <img src={props.card ? props.card.imageUrls.png : ''} width="250" />
+        <img
+          src={props.card ? props.card.imageUrls.png : ''}
+          width="250"
+        />
       </div>
   )
 }
