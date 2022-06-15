@@ -8,6 +8,7 @@ class Card {
   readonly price: string
   readonly detailsUrl: string
   readonly number: number
+  readonly text: string
   quantity: number
   quantityInDeck: number
 
@@ -21,6 +22,7 @@ class Card {
     price: string,
     detailsUrl: string,
     number: number,
+    text: string,
     quantity: number = 1,
     quantityInDeck: number = 0) {
     this.id = id
@@ -32,6 +34,7 @@ class Card {
     this.price = price
     this.detailsUrl = detailsUrl
     this.number = number
+    this.text = text
     this.quantity = quantity
     this.quantityInDeck = quantityInDeck
   }
