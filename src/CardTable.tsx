@@ -1,13 +1,16 @@
 import * as React from 'react'
 import Card from './Card'
 import { DataGrid, GridColDef, GridRenderCellParams, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarExport, GridToolbarFilterButton } from '@mui/x-data-grid'
-import { Link, Button, Stack, Checkbox } from '@mui/material'
+import { Link, Button, Stack, Checkbox, TextField } from '@mui/material'
 import MuiCard from '@mui/material/Card'
 import UploadIcon from '@mui/icons-material/Upload'
 import Papa from 'papaparse'
+import CardIndex from './CardIndex'
 
 import './Mana.css'
 import { getCard } from './Scryfall'
+
+let cardIndex: CardIndex
 
 const columns: GridColDef[] = [
   { field: 'set', headerName: 'SET', width: 75 },
@@ -114,9 +117,9 @@ export default function CardTable (
             fetchedCards.filter((card: Card) => card.id).map(
               card => [card.id, card]
             ))
-          console.log('filteredCollection', filteredCollection)
           setImportedCollection(filteredCollection)
           setCollection(filterCollection(filteredCollection, filters))
+          cardIndex = new CardIndex(Array.from(filteredCollection.values()))
         })
       }
     })
