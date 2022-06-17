@@ -5,12 +5,12 @@ import { Link, Button, Stack, Checkbox, TextField, Autocomplete } from '@mui/mat
 import MuiCard from '@mui/material/Card'
 import UploadIcon from '@mui/icons-material/Upload'
 import Papa from 'papaparse'
-import CardIndex from './CardIndex'
+import FilterManager from './FilterManager'
 
 import './Mana.css'
 import { getCard } from './Scryfall'
 
-let cardIndex: CardIndex
+const filterManager = new FilterManager()
 
 const columns: GridColDef[] = [
   { field: 'set', headerName: 'SET', width: 75 },
@@ -58,34 +58,6 @@ export default function CardTable (
     onRowOver?: (card: Card) => void
   }): React.ReactElement {
   const [collection, setCollection] = React.useState<Map<string, Card>>(props.cards)
-  const [importedCollection, setImportedCollection] =
-    React.useState<Map<string, Card>>(new Map())
-
-  type Filter = (card: Card) => boolean
-  const [filters, setFilters] = React.useState<Map<string, Filter>>(new Map())
-
-  const filterCollection = (
-    collection: Map<string, Card>,
-    filters: Map<string, Filter>): Map<string, Card> => {
-    const filteredCollection = new Map(collection)
-
-    if (filters.size === 0) {
-      return filteredCollection
-    }
-
-    filteredCollection.forEach((card: Card) => {
-      let allow = false
-      filters.forEach((filter: Filter, filterId: string) => {
-        if (filter(card)) {
-          allow = true
-        }
-      })
-      if (!allow) {
-        filteredCollection.delete(card.id)
-      }
-    })
-    return filteredCollection
-  }
 
   const handleFileChange = (e: any) => {
     if (e.target.files.length <= 0) {
@@ -113,9 +85,8 @@ export default function CardTable (
             fetchedCards.filter((card: Card) => card.id).map(
               card => [card.id, card]
             ))
-          setImportedCollection(filteredCollection)
-          setCollection(filterCollection(filteredCollection, filters))
-          cardIndex = new CardIndex(Array.from(filteredCollection.values()))
+          filterManager.setCollection(filteredCollection)
+          setCollection(filterManager.getFilteredCollection())
         })
       }
     })
@@ -171,25 +142,16 @@ export default function CardTable (
   }
 
   const handleColorCheckboxChange = (event: any, checked: boolean) => {
-    const newFilters: Map<string, Filter> = new Map(filters)
     const color = event.target.id
-    const filterKey = `filter-for-${color}`
 
-    if (checked) {
-      newFilters.set(
-        filterKey,
-        (card: Card) => card.manaCost.search(`{${color}}`) >= 0)
-    } else {
-      newFilters.delete(filterKey)
-    }
-    setFilters(newFilters)
-    setCollection(filterCollection(importedCollection, newFilters))
+    checked ? filterManager.addColor(color) : filterManager.deleteColor(color)
+    setCollection(filterManager.getFilteredCollection())
   }
 
   const handleSearchChange = (event: any, value: string) => {
     const searchText = value
-    console.log(searchText)
-    console.log(cardIndex.getCards(searchText))
+    filterManager.setText(searchText)
+    setCollection(filterManager.getFilteredCollection())
   }
 
   return (
@@ -214,7 +176,7 @@ export default function CardTable (
           size='small'
           sx={{ width: 300 }}
           id='autocomplete-card-filter'
-          options={cardIndex ? cardIndex.getIndex() : []}
+          options={filterManager.getCardIndex()}
           renderInput={(params) => <TextField {...params} label='Search' />}
           onInputChange={handleSearchChange}
         />
