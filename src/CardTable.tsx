@@ -55,7 +55,8 @@ export default function CardTable (
   props: {
     cards: any,
     onCardSelected: (card: Card) => void,
-    onRowOver?: (card: Card) => void
+    onRowOver?: (card: Card) => void,
+    onRowLeave?: (card: Card) => void
   }): React.ReactElement {
   const [collection, setCollection] = React.useState<Map<string, Card>>(props.cards)
 
@@ -131,7 +132,11 @@ export default function CardTable (
     }
   }
 
-  const handleMouseLeave = (event: any) => {
+  const handleRowLeave = (event: any) => {
+    const card = findCard(event.currentTarget.dataset.id)
+    if (props.onRowLeave && card) {
+      props.onRowLeave(card)
+    }
   }
 
   const handleMouseDown = (e: any) => {
@@ -196,7 +201,7 @@ export default function CardTable (
           componentsProps={{
             row: {
               onMouseEnter: handleRowOver,
-              onMouseLeave: handleMouseLeave,
+              onMouseLeave: handleRowLeave,
               onMouseDown: handleMouseDown
             }
           }}

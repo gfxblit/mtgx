@@ -30,8 +30,12 @@ function App () {
     setDeck(newDeck)
   }
 
-  const handleRowOverInCollection = (card: Card) => {
+  const handleRowOverInCollectionOrDeck = (card: Card) => {
     setPreviewCard(card)
+  }
+
+  const handleRowLeaveInCollectionOrDeck = (card: Card) => {
+    setPreviewCard(undefined)
   }
 
   const handleCardSelectedInDeck = (card: Card) => {
@@ -42,10 +46,6 @@ function App () {
       newDeck.delete(card.id)
       setDeck(newDeck)
     }
-  }
-
-  const handleRowOverInDeck = (card: Card) => {
-    setPreviewCard(card)
   }
 
   if (!cardsLoading) {
@@ -68,12 +68,14 @@ function App () {
           <CardTable
             cards={cards}
             onCardSelected={handleCardSelectedInCollection}
-            onRowOver={handleRowOverInCollection}
+            onRowOver={handleRowOverInCollectionOrDeck}
+            onRowLeave={handleRowLeaveInCollectionOrDeck}
           />
           <Deck
             cards={deck}
             onCardSelected={handleCardSelectedInDeck}
-            onRowOver={handleRowOverInDeck}
+            onRowOver={handleRowOverInCollectionOrDeck}
+            onRowLeave={handleRowLeaveInCollectionOrDeck}
           />
         </Stack>
         <CardPreview card={previewCard} />

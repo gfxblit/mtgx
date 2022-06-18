@@ -7,7 +7,8 @@ export default function Deck (
   props: {
     cards: Map<string, Card>,
     onCardSelected: (card: Card) => void,
-    onRowOver?: (card: Card) => void
+    onRowOver?: (card: Card) => void,
+    onRowLeave?: (card: Card) => void
   }): React.ReactElement {
   const handleMouseDown = (e: any) => {
     const card = props.cards.get(e.currentTarget.dataset.id)
@@ -22,6 +23,14 @@ export default function Deck (
       props.onRowOver(card)
     }
   }
+
+  const handleMouseLeave = (e: any) => {
+    const card = props.cards.get(e.currentTarget.dataset.id)
+    if (props.onRowLeave && card) {
+      props.onRowLeave(card)
+    }
+  }
+
   return (
     <MuiCard style={{ height: 650, width: 300 }}>
       <DataGrid
@@ -38,7 +47,8 @@ export default function Deck (
         componentsProps={{
           row: {
             onMouseDown: handleMouseDown,
-            onMouseEnter: handleMouseEnter
+            onMouseEnter: handleMouseEnter,
+            onMouseLeave: handleMouseLeave
           }
         }}
       />
