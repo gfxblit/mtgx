@@ -76,6 +76,7 @@ function App () {
             onCardSelected={handleCardSelectedInDeck}
             onRowOver={handleRowOverInCollectionOrDeck}
             onRowLeave={handleRowLeaveInCollectionOrDeck}
+            onCountClicked={handleCardSelectedInCollection}
           />
         </Stack>
         <CardPreview card={previewCard} />

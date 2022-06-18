@@ -2,16 +2,18 @@ import * as React from 'react'
 import MuiCard from '@mui/material/Card'
 import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid'
 import Card from './Card'
+import { Fab, Stack, Button } from '@mui/material'
 
 export default function Deck (
   props: {
     cards: Map<string, Card>,
     onCardSelected: (card: Card) => void,
     onRowOver?: (card: Card) => void,
-    onRowLeave?: (card: Card) => void
+    onRowLeave?: (card: Card) => void,
+    onCountClicked?: (card: Card) => void
   }): React.ReactElement {
   const handleMouseDown = (e: any) => {
-    const card = props.cards.get(e.currentTarget.dataset.id)
+    const card = props.cards.get(e.target.id)
     if (card) {
       props.onCardSelected(card)
     }
@@ -31,22 +33,41 @@ export default function Deck (
     }
   }
 
+  const handleOnCountClicked = (e: any) => {
+    console.log('count clicked', e)
+    const card = props.cards.get(e.target.id)
+    console.log(props.onCountClicked, card)
+    if (props.onCountClicked && card) {
+      props.onCountClicked(card)
+    }
+  }
+
+  const columns = [{
+    field: 'name',
+    headerName: 'Deck',
+    width: 250,
+    renderCell: (params: GridRenderCellParams<Card>) =>
+        <Stack direction='row' alignItems='center' spacing={1} >
+        <Fab size='small' onClick={handleOnCountClicked} id={params.row.id} >
+            {`${params.row.quantityInDeck}x`}
+        </Fab>
+        <Button
+          size='small'
+          onClick={handleMouseDown}
+          id={params.row.id}
+        >
+          {params.row.name}
+        </Button>
+        </Stack>
+  }]
+
   return (
     <MuiCard style={{ height: 650, width: 300 }}>
       <DataGrid
-        columns={[{
-          field: 'name',
-          headerName: 'Deck',
-          width: 250,
-          renderCell: (params: GridRenderCellParams<Card>) => (
-            `${params.row.quantityInDeck}x ${params.row.name}`
-          )
-        }
-        ]}
+        columns={columns}
         rows={Array.from(props.cards.values())}
         componentsProps={{
           row: {
-            onMouseDown: handleMouseDown,
             onMouseEnter: handleMouseEnter,
             onMouseLeave: handleMouseLeave
           }
