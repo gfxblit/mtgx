@@ -3,6 +3,15 @@ import CardIndex from './CardIndex'
 
 type Filter = (card: Card) => boolean
 
+function cardHasColorIdentity (card: Card, color: string): boolean {
+  if (card.colorIdentity) {
+    const res = card.colorIdentity.find(el => color === el)
+    return res !== undefined
+  } else {
+    return true
+  }
+}
+
 class FilterManager {
   colorFilters: Map<string, Filter> = new Map()
   textFilter?: Filter
@@ -11,7 +20,9 @@ class FilterManager {
 
   addColor (color:string) {
     const filter: Filter =
-      (card: Card) => card.manaCost.search(`{${color}}`) >= 0
+      (card: Card) =>
+        (card.manaCost ? card.manaCost.search(`{${color}}`) >= 0 : false) ||
+        cardHasColorIdentity(card, color)
 
     this.colorFilters.set(color, filter)
   }
