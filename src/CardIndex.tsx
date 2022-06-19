@@ -5,7 +5,11 @@ function extractTokensFromName (card: Card): string[] {
 }
 
 function extractTokensFromText (card: Card): string[] {
-  return card.text.split(/\s+/)
+  if (card.text) {
+    return card.text.split(/\s+/)
+  } else {
+    return []
+  }
 }
 
 function extractTokensFromType (card: Card): string[] {
