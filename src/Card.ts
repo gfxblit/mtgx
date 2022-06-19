@@ -9,6 +9,7 @@ class Card {
   readonly detailsUrl: string
   readonly number: number
   readonly text: string
+  readonly colorIdentity: string[]
   quantity: number
   quantityInDeck: number
 
@@ -23,6 +24,7 @@ class Card {
     detailsUrl: string,
     number: number,
     text: string,
+    colorIdentity: string[],
     quantity: number = 1,
     quantityInDeck: number = 0) {
     this.id = id
@@ -35,6 +37,7 @@ class Card {
     this.detailsUrl = detailsUrl
     this.number = number
     this.text = text
+    this.colorIdentity = colorIdentity
     this.quantity = quantity
     this.quantityInDeck = quantityInDeck
   }
@@ -50,7 +53,8 @@ class Card {
       json.price,
       json.scryfall_uri,
       json.collector_number,
-      json.oracle_text)
+      json.oracle_text,
+      json.color_identity)
     return card
   }
 }
