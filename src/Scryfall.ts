@@ -11,6 +11,11 @@ const SCRYFALL_CARDS_API_URL = SCRYFALL_BASE_API_URL + '/cards'
 
 const cardsBySetNumber: Map<{ set: string, number: number }, Card> = new Map()
 const throttle = throttledQueue(SCRYFALL_REQUESTS_CAP, SCYFALL_REQUEST_INTERVAL)
+const setNameSubstitions = new Map<string, string>([
+  ['ppafr', 'pafr'],
+  ['ppsnc', 'psnc'],
+  ['ppiko', 'piko']
+])
 
 async function getCard (setNumber: {set: string, number: number}) {
   const card = cardsBySetNumber.get(setNumber)
@@ -18,14 +23,17 @@ async function getCard (setNumber: {set: string, number: number}) {
     return new Promise<Card>(resolve => resolve(card))
   }
 
-  return throttle<Card>(() => fetch(
-    `${SCRYFALL_CARDS_API_URL}/${setNumber.set}/${setNumber.number}`)
-    .then(res => res.json())
-    .then(json => {
-      const card = Card.fromJson(json)
-      cardsBySetNumber.set(setNumber, card)
-      return card
-    }))
+  return throttle<Card>(() => {
+    setNumber.set = setNameSubstitions.get(setNumber.set) || setNumber.set
+    return fetch(
+      `${SCRYFALL_CARDS_API_URL}/${setNumber.set}/${setNumber.number}`)
+      .then(res => res.json())
+      .then(json => {
+        const card = Card.fromJson(json)
+        cardsBySetNumber.set(setNumber, card)
+        return card
+      })
+  })
 }
 
 export { getCard }
