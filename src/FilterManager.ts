@@ -42,6 +42,8 @@ class FilterManager {
 
     if (cardsWithText) {
       this.textFilter = (card: Card) => cardsWithText.has(card.id)
+    } else {
+      this.textFilter = (card: Card) => false
     }
   }
 

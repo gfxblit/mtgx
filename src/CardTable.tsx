@@ -9,6 +9,7 @@ import FilterManager from './FilterManager'
 
 import './Mana.css'
 import { getCard } from './Scryfall'
+import { throttle } from 'throttle-debounce'
 
 const filterManager = new FilterManager()
 
@@ -83,9 +84,10 @@ export default function CardTable (
           })
         ).then((fetchedCards: Card[]) => {
           const filteredCollection: Map<string, Card> = new Map(
-            fetchedCards.filter((card: Card) => card.id).map(
-              card => [card.id, card]
-            ))
+            fetchedCards
+              .filter((card: Card) => card.id)
+              .map(card => [card.id, card]))
+
           filterManager.setCollection(filteredCollection)
           setCollection(filterManager.getFilteredCollection())
         })
@@ -153,11 +155,14 @@ export default function CardTable (
     setCollection(filterManager.getFilteredCollection())
   }
 
-  const handleSearchChange = (event: any, value: string) => {
-    const searchText = value
-    filterManager.setText(searchText)
-    setCollection(filterManager.getFilteredCollection())
-  }
+  const throttledHandleSearchChange = throttle(250,
+    (event: any, value: string) => {
+      const searchText = value
+      filterManager.setText(searchText)
+      setCollection(filterManager.getFilteredCollection())
+    },
+    { noLeading: true }
+  )
 
   return (
     <Stack spacing={1} style={{ height: 650, width: '100%' }}>
@@ -183,7 +188,7 @@ export default function CardTable (
           id='autocomplete-card-filter'
           options={filterManager.getCardIndex()}
           renderInput={(params) => <TextField {...params} label='Search' />}
-          onInputChange={handleSearchChange}
+          onInputChange={throttledHandleSearchChange}
         />
         </Stack>
       </MuiCard>
