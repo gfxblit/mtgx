@@ -8,7 +8,8 @@ import Papa from 'papaparse'
 import FilterManager from './FilterManager'
 
 import './Mana.css'
-import { getCard } from './Scryfall'
+import * as Scryfall from './Scryfall'
+import * as CardDb from './CardDb'
 import { throttle } from 'throttle-debounce'
 
 const filterManager = new FilterManager()
@@ -79,16 +80,33 @@ export default function CardTable (
       skipEmptyLines: true,
       complete: (results) => {
         console.log(results)
+        let loaded = 0
         Promise.all(
           results.data.map((csvRow: any) => {
             console.log('csvRow', csvRow)
-            return getCard({
-              set: csvRow['Set Code'].toLowerCase(),
-              number: csvRow['Card Number']
-            }).then((card: Card) => {
-              card.quantity = csvRow.Quantity
-              return card
-            })
+            const set = csvRow['Set Code'].toLowerCase()
+            const number = csvRow['Card Number']
+
+            const maybeCachedCard = CardDb.getCard(set, number)
+
+            loaded++
+            console.log(`${loaded}/${results.data.length}`)
+
+            if (maybeCachedCard) {
+              return new Promise<Card>(resolve => {
+                resolve(maybeCachedCard as Card)
+              })
+            } else {
+              return Scryfall.getCard({ set, number }).then((card: Card) => {
+                card.quantity = csvRow.Quantity
+
+                if (card.id) {
+                  CardDb.setCard(card)
+                }
+
+                return card
+              })
+            }
           })
         ).then((fetchedCards: Card[]) => {
           const filteredCollection: Map<string, Card> = new Map(
