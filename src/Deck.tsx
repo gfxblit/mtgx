@@ -1,7 +1,7 @@
 import * as React from 'react'
 import MuiCard from '@mui/material/Card'
 import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid'
-import Card from './Card'
+import { Card } from './Card'
 import { Fab, Stack, Button } from '@mui/material'
 
 export default function Deck (
@@ -56,7 +56,7 @@ export default function Deck (
           onClick={handleMouseDown}
           id={params.row.id}
         >
-          {params.row.name}
+          {params.row.faces[0].name}
         </Button>
         </Stack>
   }]

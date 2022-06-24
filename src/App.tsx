@@ -1,11 +1,12 @@
 import * as React from 'react'
 import './App.css'
-import Card from './Card'
+import { Card } from './Card'
 import CardTable from './CardTable'
 import { getCard } from './Scryfall'
 import Deck from './Deck'
 import Stack from '@mui/material/Stack'
 import CardPreview from './CardPreview'
+// import cardDb from './CardDb'
 
 function App () {
   // const cards = [

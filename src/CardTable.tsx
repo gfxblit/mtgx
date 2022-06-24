@@ -1,5 +1,5 @@
 import * as React from 'react'
-import Card from './Card'
+import { Card } from './Card'
 import { DataGrid, GridColDef, GridRenderCellParams, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarExport, GridToolbarFilterButton } from '@mui/x-data-grid'
 import { Link, Button, Stack, Checkbox, TextField, Autocomplete } from '@mui/material'
 import MuiCard from '@mui/material/Card'
@@ -22,7 +22,7 @@ const columns: GridColDef[] = [
     width: 250,
     renderCell: (params: GridRenderCellParams<Card>) => (
         <Link href={params.row.detailsUrl}>
-         {params.row.name}
+         {params.row.faces[0].name}
         </Link>
     )
   },
@@ -35,16 +35,24 @@ const columns: GridColDef[] = [
       // <abbr className="card-symbol card-symbol-U" />
       // <abbr className="card-symbol card-symbol-U" />
       // <abbr className="card-symbol card-symbol-3" />
-      const matchInsideBraces = /\{([^})]+)\}/
+      if (params.row.faces[0].manaCost) {
+        const matchInsideBraces = /\{([^})]+)\}/
 
-      return (params.row.manaCost.split(matchInsideBraces)
-        .filter((e: any) => e) // filter empty strings
-        .map((ent: string, index: number) =>
-          <abbr key={index} className={`card-symbol card-symbol-${ent}`} />
-        ))
+        return (params.row.faces[0].manaCost.split(matchInsideBraces)
+          .filter((e: any) => e) // filter empty strings
+          .map((ent: string, index: number) =>
+            <abbr key={index} className={`card-symbol card-symbol-${ent}`} />
+          ))
+      }
+      return <div />
     }
   },
-  { field: 'type', headerName: 'TYPE', width: 200 },
+  {
+    field: 'type',
+    headerName: 'TYPE',
+    width: 200,
+    renderCell: (params: GridRenderCellParams<Card>) => { return params.row.faces[0].type }
+  },
   {
     field: 'price',
     headerName: 'PRICE',

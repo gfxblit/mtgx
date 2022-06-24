@@ -1,5 +1,5 @@
 import * as React from 'react'
-import Card from './Card'
+import { Card } from './Card'
 
 export default function CardPreview (
   props: {card?: Card }): React.ReactElement {
@@ -13,16 +13,24 @@ export default function CardPreview (
     })
   })
 
-  return (
-      <div style={{
-        left: `${mousePosition.x + 20}px`,
-        top: `${mousePosition.y - 20}px`,
-        position: 'fixed'
-      }}>
-        <img
-          src={props.card ? props.card.imageUrls.png : ''}
-          width="250"
-        />
-      </div>
-  )
+  const card = props.card
+  if (!card) {
+    return <div />
+  }
+
+  const imageUrls = card.faces.map(face => face.imageUrls.png).filter(el => el)
+
+  return (<div>
+    {imageUrls.map((imageUrl: string, index: number) =>
+      <div
+        key={index}
+        style={{
+          left: `${mousePosition.x + 20 + 255 * index}px`,
+          top: `${mousePosition.y - 20}px`,
+          position: 'fixed'
+        }}>
+        <img src={imageUrl} width="250" />
+        </div>
+    )}
+    </div>)
 }

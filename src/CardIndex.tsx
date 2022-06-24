@@ -1,19 +1,15 @@
-import Card from './Card'
+import { Card } from './Card'
 
 function extractTokensFromName (card: Card): string[] {
-  return card.name.split(/\s+/)
+  return card.faces.map(face => face.name).join(' ').split(/\s+/)
 }
 
 function extractTokensFromText (card: Card): string[] {
-  if (card.text) {
-    return card.text.split(/\s+/)
-  } else {
-    return []
-  }
+  return card.faces.map(face => face.text).join(' ').split(/\s+/)
 }
 
 function extractTokensFromType (card: Card): string[] {
-  return card.type.split(/\s+/)
+  return card.faces.map(face => face.type).join(' ').split(/\s+/)
 }
 
 function extractTokens (card: Card) {
@@ -39,7 +35,6 @@ class CardIndex {
         }
       })
     })
-    console.log(this.index)
   }
 
   getCards (token: string): Map<string, Card> | undefined {

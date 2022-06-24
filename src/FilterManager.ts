@@ -1,11 +1,14 @@
-import Card from './Card'
+import { Card } from './Card'
 import CardIndex from './CardIndex'
 
 type Filter = (card: Card) => boolean
 
 function cardHasColorIdentity (card: Card, color: string): boolean {
-  if (card.colorIdentity) {
-    const res = card.colorIdentity.find(el => color === el)
+  const colorIdentities = card.faces.map(face => face.colorIdentity)
+    .filter(el => el)
+    .flat()
+  if (colorIdentities.length > 0) {
+    const res = colorIdentities.find(el => color === el)
     return res !== undefined
   } else {
     return true
@@ -20,9 +23,11 @@ class FilterManager {
 
   addColor (color:string) {
     const filter: Filter =
-      (card: Card) =>
-        (card.manaCost ? card.manaCost.search(`{${color}}`) >= 0 : false) ||
-        cardHasColorIdentity(card, color)
+      (card: Card) => {
+        const manaCosts = card.faces.map(face => face.manaCost).join('')
+        return manaCosts.search(`{${color}}`) >= 0 ||
+          cardHasColorIdentity(card, color)
+      }
 
     this.colorFilters.set(color, filter)
   }

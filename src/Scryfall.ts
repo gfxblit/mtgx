@@ -1,4 +1,4 @@
-import Card from './Card'
+import { Card, cardFromScryfallJson } from './Card'
 import throttledQueue from 'throttled-queue'
 
 // Scryfall recommends rate limits at 10 transactions/sec:
@@ -29,7 +29,7 @@ async function getCard (setNumber: {set: string, number: number}) {
       `${SCRYFALL_CARDS_API_URL}/${setNumber.set}/${setNumber.number}`)
       .then(res => res.json())
       .then(json => {
-        const card = Card.fromJson(json)
+        const card = cardFromScryfallJson(json)
         cardsBySetNumber.set(setNumber, card)
         return card
       })
