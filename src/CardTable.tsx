@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Card } from './Card'
-import { DataGrid, GridColDef, GridRenderCellParams, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarExport, GridToolbarFilterButton } from '@mui/x-data-grid'
-import { Link, Button, Stack, Checkbox, TextField, Autocomplete } from '@mui/material'
+import { DataGrid, GridColDef, GridComparatorFn, GridRenderCellParams, GridToolbarColumnsButton, GridToolbarContainer, GridToolbarDensitySelector, GridToolbarExport, GridToolbarFilterButton } from '@mui/x-data-grid'
+import { Button, Stack, Checkbox, TextField, Autocomplete } from '@mui/material'
 import MuiCard from '@mui/material/Card'
 import UploadIcon from '@mui/icons-material/Upload'
 import Papa from 'papaparse'
@@ -12,7 +12,33 @@ import * as Scryfall from './Scryfall'
 import * as CardDb from './CardDb'
 import { throttle } from 'throttle-debounce'
 
+interface CardRow {
+  id: string,
+  name: string,
+  set: string,
+  manaCost: string,
+  type: string,
+  card: Card
+}
+
 const filterManager = new FilterManager()
+
+const countMana = (costs: string[]): number => {
+  return costs
+    .filter(el => el)
+    .map(val => {
+      const intOrNaN = parseInt(val)
+      return isNaN(intOrNaN) ? 1 : intOrNaN
+    })
+    .reduce((prev, curr) => prev + curr, 0)
+}
+
+const manaCostComparator: GridComparatorFn<string> = (mc1, mc2) => {
+  const matchInsideBraces = /\{([^})]+)\}/
+  const costs1 = countMana(mc1?.split(matchInsideBraces).filter(el => el))
+  const costs2 = countMana(mc2?.split(matchInsideBraces).filter(el => el))
+  return costs1 - costs2
+}
 
 const columns: GridColDef[] = [
   { field: 'set', headerName: 'SET', width: 75 },
@@ -22,24 +48,25 @@ const columns: GridColDef[] = [
     headerName: 'NAME',
     width: 250,
     renderCell: (params: GridRenderCellParams<Card>) => (
-        <Link href={params.row.detailsUrl}>
-         {params.row.faces[0].name}
-        </Link>
+        <Button size='small' id={params.row.id}>
+          {params.row.name}
+        </Button>
     )
   },
   {
     field: 'manaCost',
     headerName: 'COST',
     width: 100,
+    sortComparator: manaCostComparator,
     renderCell: (params: GridRenderCellParams<Card>) => {
       // example: manaCost string: "{U}{U}{3}" translates to
       // <abbr className="card-symbol card-symbol-U" />
       // <abbr className="card-symbol card-symbol-U" />
       // <abbr className="card-symbol card-symbol-3" />
-      if (params.row.faces[0].manaCost) {
+      if (params.row.manaCost) {
         const matchInsideBraces = /\{([^})]+)\}/
 
-        return (params.row.faces[0].manaCost.split(matchInsideBraces)
+        return (params.row.manaCost.split(matchInsideBraces)
           .filter((e: any) => e) // filter empty strings
           .map((ent: string, index: number) =>
             <abbr key={index} className={`card-symbol card-symbol-${ent}`} />
@@ -51,13 +78,7 @@ const columns: GridColDef[] = [
   {
     field: 'type',
     headerName: 'TYPE',
-    width: 200,
-    renderCell: (params: GridRenderCellParams<Card>) => { return params.row.faces[0].type }
-  },
-  {
-    field: 'price',
-    headerName: 'PRICE',
-    description: 'Price of this card in USD'
+    width: 200
   }
 ]
 
@@ -223,7 +244,18 @@ export default function CardTable (
           components={{
             Toolbar: CustomToolbar
           }}
-          rows={Array.from(collection.values())}
+          rows={Array.from(collection.values())
+            .map(card => {
+              const row: CardRow = {
+                id: card.id,
+                name: card.faces[0].name,
+                manaCost: card.faces[0].manaCost,
+                type: card.faces[0].type,
+                set: card.set,
+                card
+              }
+              return row
+            })}
           columns={columns}
           pageSize={10}
           rowsPerPageOptions={[10]}
