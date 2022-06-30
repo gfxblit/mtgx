@@ -1,6 +1,6 @@
 import * as React from 'react'
 import MuiCard from '@mui/material/Card'
-import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid'
+import { DataGrid, GridRenderCellParams, GridColumnHeaderParams } from '@mui/x-data-grid'
 import { Card } from './Card'
 import { Fab, Stack, Button } from '@mui/material'
 
@@ -44,9 +44,13 @@ export default function Deck (
 
   const columns = [{
     field: 'name',
-    headerName: 'Deck',
     width: 250,
-    renderCell: (params: GridRenderCellParams<Card>) =>
+    renderHeader: (params: GridColumnHeaderParams<any, Card>) => (
+        <strong>Deck</strong>
+    ),
+    renderCell: (params: GridRenderCellParams<Card>) => {
+      console.log(params)
+      return (
         <Stack direction='row' alignItems='center' spacing={1} >
         <Fab size='small' onClick={handleOnCountClicked} id={params.row.id} >
             {`${params.row.quantityInDeck}x`}
@@ -59,6 +63,8 @@ export default function Deck (
           {params.row.faces[0].name}
         </Button>
         </Stack>
+      )
+    }
   }]
 
   return (
