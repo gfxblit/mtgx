@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/mtgx/static/css/main.cdd0ea60.css",
-    "main.js": "/mtgx/static/js/main.d7c1ff77.js",
+    "main.css": "/mtgx/static/css/main.dce46759.css",
+    "main.js": "/mtgx/static/js/main.9ff190a9.js",
     "static/js/787.3682865c.chunk.js": "/mtgx/static/js/787.3682865c.chunk.js",
     "index.html": "/mtgx/index.html",
-    "main.cdd0ea60.css.map": "/mtgx/static/css/main.cdd0ea60.css.map",
-    "main.d7c1ff77.js.map": "/mtgx/static/js/main.d7c1ff77.js.map",
+    "main.dce46759.css.map": "/mtgx/static/css/main.dce46759.css.map",
+    "main.9ff190a9.js.map": "/mtgx/static/js/main.9ff190a9.js.map",
     "787.3682865c.chunk.js.map": "/mtgx/static/js/787.3682865c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.cdd0ea60.css",
-    "static/js/main.d7c1ff77.js"
+    "static/css/main.dce46759.css",
+    "static/js/main.9ff190a9.js"
   ]
 }
